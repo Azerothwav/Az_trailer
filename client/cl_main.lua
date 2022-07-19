@@ -64,7 +64,7 @@ function SpawnRemorque(label, spawnname, coords, heading, price)
     elseif Config.UseQBCore then
         QBCore.Functions.TriggerCallback('az_trail:buyTrailer', function(canbuy)
             if canbuy then
-                QBCore.Functions.Notify(Config.Lang["YouBuy"]..label.. Config.Lang["For"]..price..' $', "sucess")
+                QBCore.Functions.Notify(Config.Lang["YouBuy"]..label.. Config.Lang["For"]..price..' $', "success")
                 QBCore.Functions.SpawnVehicle(spawnname, function(vehicle)
                     SetEntityHeading(vehicle, heading)
                     SetVehicleOnGroundProperly(vehicle)
@@ -78,6 +78,7 @@ end
 
 local npcspawn = false
 local lastcoords = nil
+local notshown = true
 Citizen.CreateThread(function()
     while true do
         local wait = 2000
@@ -101,7 +102,10 @@ Citizen.CreateThread(function()
                         end
                     end
                 elseif Config.UseQBCore then
-                    QBCore.Functions.Notify(Config.Lang["PressToOpen"], "sucess")
+                    if notshown then
+                        notshown = false
+                        QBCore.Functions.Notify(Config.Lang["PressToOpen"], "success")
+                    end
                     if IsControlJustReleased(0, 38) then
                         if PlayerJob.name == v.job or v.job == 'none' then
                             inmenu = true

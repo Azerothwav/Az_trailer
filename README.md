@@ -5,6 +5,7 @@
 Hello, here I am again with a script that I particularly enjoyed making, the az_trail is a script that will allow you to use boat, motorcycle, car, helicopter and plane trailers. But what is the difference with other trailer script that we can already find then? All the positions that your vehicles will adopt on the trailer are dynamic, which means that you don't need to make a configuration of each position on each trailer! This script is normally the first trailer script to offer you this for free and with a non-encrypted code. I use RageUI to make the trailer store menus but you can totally change to put your own menus since the code is totally open source.
 
 A vehicle configuration that can be used as a remoque is present, allowing you to choose which class of vehicle it can accommodate, I made it as simplistic as possible to avoid you spending too much time on it!
+Trailer vendors are configurable very quickly in the configuration allowing you also to limit them to certain trades
 
 Because it can be sometimes complicated to access a vehicle that will be used as a trailer, a command is available to install a small ramp that will allow you to access more quickly, it is created only in the customer of the one who installs it to avoid problems of trolleurs, a command can also remove this ramp.
 Small novelty which also makes its appearance in this script, the accounting QBCore included. From now on you could totally use the scripts directly also in QBCore, you just have to go in the config to activate it !

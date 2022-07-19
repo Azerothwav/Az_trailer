@@ -26,17 +26,16 @@ if Config.UseESX then
         ESX.PlayerData.job = job
     end)
 elseif Config.UseQBCore then
-    PlayerData = {}
+    PlayerJob = {}
     QBCore = exports['qb-core']:GetCoreObject()
 
-    AddEventHandler('onResourceStart', function(resource)
-        if resource == GetCurrentResourceName() then
-            Wait(100)
-            PlayerData = QBCore.Functions.GetPlayerData()
-        end
+    RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
+    AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
+        PlayerJob = QBCore.Functions.GetPlayerData().job
     end)
 
-    RegisterNetEvent('QBCore:Client:OnJobUpdate', function(JobInfo)
-        PlayerData = QBCore.Functions.GetPlayerData()
+    RegisterNetEvent('QBCore:Client:OnJobUpdate')
+    AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
+        PlayerJob = JobInfo
     end)
 end

@@ -15,7 +15,7 @@ if Config.UseESX then
             end
         end
     end)
-elseif Config.QBCore then
+elseif Config.UseQBCore then
     QBCore = exports['qb-core']:GetCoreObject()
     
     QBCore.Functions.CreateCallback("az_trail:buyTrailer", function(source, cb, price)

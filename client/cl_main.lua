@@ -103,7 +103,7 @@ Citizen.CreateThread(function()
                 elseif Config.UseQBCore then
                     QBCore.Functions.Notify(Config.Lang["PressToOpen"], "sucess")
                     if IsControlJustReleased(0, 38) then
-                        if PlayerData.job.name == v.job or v.job == 'none' then
+                        if PlayerJob.name == v.job or v.job == 'none' then
                             inmenu = true
                             OpenMenuTrailer(k)
                         else

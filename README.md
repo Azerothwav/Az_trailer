@@ -31,6 +31,8 @@ Sincerely, Azeroth
 ![alt text](https://cdn.discordapp.com/attachments/912680553503948821/998900215803293706/moto.PNG?width=1440&height=499)
 # Rampe
 ![alt text](https://cdn.discordapp.com/attachments/912680553503948821/998900216193355817/rampe.PNG?width=1263&height=701)
+# Preview
+https://youtu.be/3dT0VTdSASQ
 
 # Commands
 The basic commands present are :

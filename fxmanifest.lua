@@ -1,7 +1,7 @@
 fx_version 'adamant'
 games { 'gta5' }
 
-description 'Az_corejobs by Azeroth'
+description 'Az_trailer by Azeroth'
 version '1.1'
 
 client_scripts {

@@ -1,6 +1,6 @@
 # Az_trailer
 
-![alt text](https://media.discordapp.net/attachments/912680553503948821/998900051281715280/Email_Header_3.png)
+![Group 2 (1)](https://user-images.githubusercontent.com/76072277/197746387-b0216732-083d-4e26-9b09-9617f1aeb068.png)
 
 Hello, here I am again with a script that I particularly enjoyed making, the az_trail is a script that will allow you to use boat, motorcycle, car, helicopter and plane trailers. But what is the difference with other trailer script that we can already find then? All the positions that your vehicles will adopt on the trailer are dynamic, which means that you don't need to make a configuration of each position on each trailer! This script is normally the first trailer script to offer you this for free and with a non-encrypted code. I use RageUI to make the trailer store menus but you can totally change to put your own menus since the code is totally open source.
 

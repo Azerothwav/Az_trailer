@@ -2,7 +2,7 @@ fx_version 'adamant'
 games { 'gta5' }
 
 description 'Az_trailer by Azeroth'
-version '1.1'
+version '2.0'
 
 client_scripts {
     'lib/RMenu.lua',
@@ -33,7 +33,6 @@ client_scripts {
     'lib/menu/elements/ItemsBadge.lua',
     'lib/menu/elements/ItemsColour.lua',
     'lib/menu/elements/PanelColour.lua',
-
 
 	'config.lua',
     'client/**/*.lua',

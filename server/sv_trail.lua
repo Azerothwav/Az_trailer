@@ -1,7 +1,5 @@
-if Config.UseESX then
-    ESX = nil
-
-    TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+if Config.FrameWork == "ESX" then
+    ESX = exports['es_extended']:getSharedObject()
 
     ESX.RegisterServerCallback("az_trail:buyTrailer", function(source, cb, price)
         local xPlayer = ESX.GetPlayerFromId(source)
@@ -15,7 +13,7 @@ if Config.UseESX then
             end
         end
     end)
-elseif Config.UseQBCore then
+elseif Config.FrameWork == "QBCore" then
     QBCore = exports['qb-core']:GetCoreObject()
     
     QBCore.Functions.CreateCallback("az_trail:buyTrailer", function(source, cb, price)
@@ -29,3 +27,14 @@ elseif Config.UseQBCore then
         end
     end)
 end
+
+RegisterNetEvent("az_trailer:refound")
+AddEventHandler("az_trailer:refound", function()
+    if Config.FrameWork == "ESX" then
+        local xPlayer = ESX.GetPlayerFromId(source)
+        xPlayer.addAccountMoney("money", Config.RefoundPrice)
+    elseif Config.FrameWork == "QBCore" then
+        local Player = QBCore.Functions.GetPlayer(source)
+        Player.Functions.GiveMoney("cash", Config.RefoundPrice)
+    end
+end)

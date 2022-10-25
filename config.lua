@@ -1,7 +1,7 @@
 Config = {}
 
-Config.UseESX = true
-Config.UseQBCore = false
+Config.RefoundPrice = 250
+Config.FrameWork = "ESX" -- ESX or QBCore
 
 Config.TrailerShop = {
     [1] ={
@@ -10,8 +10,8 @@ Config.TrailerShop = {
         ped = 'a_f_m_downtown_01', 
         job = 'none',
         trailertobuy = {
-            {label = 'une remorque bateau', name = 'boattrailer', price = 250, coordsspawn = vector3(-251.8, 6223.12, 31.49), heading = 311.34}, 
-            {label = 'une remorque voiture', name = 'trailersmall', price = 250, coordsspawn = vector3(-251.09, 6223.35, 32.49), heading =  311.34}
+            {label = 'Boat Trailer', name = 'boattrailer', price = 250, coordsspawn = vector3(-251.8, 6223.12, 31.49), heading = 311.34}, 
+            {label = 'Car Trailer', name = 'trailersmall', price = 250, coordsspawn = vector3(-251.09, 6223.35, 32.49), heading =  311.34}
         }
     },
 }
@@ -29,6 +29,7 @@ Config.VehicleCanTrail = {
     {name = 'BOATTRAILER', class = {14}},
     {name = 'TRAILER', class = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 18, 19, 20}},
     {name = 'WASTLNDR', class = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}},
+    {name = 'TRAILER', class = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20}}
 }
 
 Config.Lang = {    
@@ -44,8 +45,42 @@ Config.Lang = {
     ["BuyFor"] = 'Rent for: ',
     ["Blip"] = 'Rent a trailer',
     ["TrailerNotFind"] = 'Trailer not found',
-    ["NotInVehicle"] = 'You are not in a vehicle'
+    ["NotInVehicle"] = 'You are not in a vehicle',
+
+    ["refoundTrailer"] = 'Refound a Trailer'
 }
 
-Config.AttachCommand = 'attacherremorque'
-Config.DetachCommand = 'detacherremorque'
+Config.SendNotification = function(msg)
+    if Config.FrameWork == "ESX" then
+        ESX.ShowNotification(msg)
+    elseif Config.FrameWork == "QBCore" then
+        QBCore.Functions.Notify(msg, "error")
+    end
+end
+
+Config.ShowHelpNotification = function(msg)
+    if Config.FrameWork == "ESX" then
+        ESX.ShowHelpNotification(msg)
+    elseif Config.FrameWork == "QBCore" then
+        print(msg)
+    end
+end
+
+Config.GetJob = function()
+    if Config.FrameWork == "ESX" then
+        return ESX.PlayerData.job.name
+    elseif Config.FrameWork == "QBCore" then
+        return PlayerJob.name
+    end
+end
+
+Config.Command = {
+    ["attachtrailer"] = "attachtrailer",
+    ["detachtrailer"] = "detachtrailer",
+
+    -- TR2 TRAILER
+    ["openrampetr2"] = "openrampetr2",
+    ["opentrunktr2"] = "opentrunktr2",
+    ["closerampetr2"] = "closerampetr2",
+    ["closetrunktr2"] = "closetrunktr2",
+}

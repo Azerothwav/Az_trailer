@@ -43,7 +43,6 @@ Config.Lang = {
     ["CantBuy"] = 'You can\'t buy that',
     ["BuyFor"] = 'Rent for: ',
     ["Blip"] = 'Rent a trailer',
-    ["TrailerNotFind"] = 'Trailer not found',
     ["NotInVehicle"] = 'You are not in a vehicle',
 
     ["refoundTrailer"] = 'Refound a Trailer'

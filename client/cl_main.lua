@@ -254,7 +254,6 @@ local CommandTable = {
         end
     end,
     ["detachtrailer"] = function()
-        local veh = GetVehiclePedIsIn(PlayerPedId())
         if IsPedInAnyVehicle(PlayerPedId(), true) then
             local veh = GetVehiclePedIsIn(PlayerPedId())
             if DoesEntityExist(veh) and IsEntityAttached(veh) then
@@ -265,7 +264,14 @@ local CommandTable = {
                 Config.SendNotification(Config.Lang["NoVehicleSet"])
             end
         else
-            Config.SendNotification(Config.Lang["NotInVehicle"])
+            local vehicleintrailer = globalSearch()
+            if tonumber(vehicleintrailer) ~= 0 and vehicleintrailer ~= nil and IsEntityAttached(vehicleintrailer) then
+                DetachEntity(vehicleintrailer, true, true)
+                notfindtrailer = true
+                trailerfind = nil
+            else
+                Config.SendNotification(Config.Lang["TrailerNotFind"])
+            end
         end
     end,
     ["openrampetr2"] = function()

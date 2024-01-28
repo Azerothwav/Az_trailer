@@ -1,80 +1,55 @@
+local QBCore = exports['qb-core']:GetCoreObject()
+
+local TrailerBuy = {}
 local notfindtrailer = true
+
 local globalSearch = function()
     return GetVehicleInDirection(GetEntityCoords(PlayerPedId()), GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 20.0, 0.0))
 end
-local TrailerBuy = {}
-TRAIL = {}
-TRAIL.Menu = {}
-TRAIL.Menu.Main = RageUI.CreateMenu("", "Trailer Shop", nil, nil, "root_cause", "shopui_title_elitastravel")
-TRAIL.Menu.RefoundTrailer = RageUI.CreateMenu("", "Refound Trailer", nil, nil, "root_cause", "shopui_title_elitastravel")
 
-if Config.FrameWork == "ESX" then
-    ESX = nil
-    Citizen.CreateThread(function()
-        while ESX == nil do TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end) Citizen.Wait(500) end
-        ESX.PlayerData.job = ESX.GetPlayerData().job
-    end)
-    RegisterNetEvent('esx:playerLoaded')
-    AddEventHandler('esx:playerLoaded', function(xPlayer)
-        ESX.PlayerData = xPlayer
-    end)
-    RegisterNetEvent('esx:setJob')
-    AddEventHandler('esx:setJob', function(job)
-        ESX.PlayerData.job = job
-    end)
-elseif Config.FrameWork == "QBCore" then
-    PlayerJob = {}
-    QBCore = exports['qb-core']:GetCoreObject()
-    RegisterNetEvent('QBCore:Client:OnPlayerLoaded')
-    AddEventHandler('QBCore:Client:OnPlayerLoaded', function()
-        PlayerJob = QBCore.Functions.GetPlayerData().job
-    end)
-    RegisterNetEvent('QBCore:Client:OnJobUpdate')
-    AddEventHandler('QBCore:Client:OnJobUpdate', function(JobInfo)
-        PlayerJob = JobInfo
-    end)
-end
+    -------------
+    -- THREADS --
+    -------------
 
-Citizen.CreateThread(function()
-	for k, v in pairs (Config.TrailerShop) do
-		local blip = AddBlipForCoord(v.npccoords.x, v.npccoords.y, v.npccoords.z)
-		SetBlipSprite (blip, 479)
-		SetBlipDisplay(blip, 4)
-		SetBlipScale(blip, 0.75)
-		SetBlipColour (blip, 45)
-		SetBlipAsShortRange(blip, true)
-		BeginTextCommandSetBlipName("STRING")
-		AddTextComponentString(Config.Lang["Blip"])
-		EndTextCommandSetBlipName(blip)
-	end
+CreateThread(function()
+    SpawnNPC()
 end)
 
-function OpenMenuTrailer(index)
-    RageUI.Visible(TRAIL.Menu.Main, not RageUI.Visible(TRAIL.Menu.Main))
-    while RageUI.Visible(TRAIL.Menu.Main) do
-        RageUI.IsVisible(TRAIL.Menu.Main, function()
-            for k, v in pairs(Config.TrailerShop[index].trailertobuy) do
-                RageUI.Button(Config.Lang["BuyFor"] .. v.price.. ' $ '.. v.label, nil, {}, true, {
-                    onSelected = function()
-                        RageUI.Visible(TRAIL.Menu.Main, not RageUI.Visible(TRAIL.Menu.Main))
-                        SpawnRemorque(v.label, v.name, v.coordsspawn, v.heading, v.price)
-                    end,
-                })
-            end
-            if #TrailerBuy > 0 then
-                RageUI.Button(Config.Lang["refoundTrailer"], "", {}, true, {
-                    onSelected = function()
-                        RageUI.Visible(TRAIL.Menu.Main, not RageUI.Visible(TRAIL.Menu.Main))
-                        RefoundTrailer()
-                    end
-                })
-            end
-        end)
-        Citizen.Wait(0)
-    end
+SpawnNPC = function()
+    CreateThread(function()
+        RequestModel(GetHashKey(Config.PedModel))
+        while not HasModelLoaded(GetHashKey(Config.PedModel)) do
+            Wait(1)
+        end
+        CreateNPC()
+    end)
 end
 
-function RefoundTrailer()
+CreateThread(function()
+    blip = AddBlipForCoord(Config.PedLocation.x, Config.PedLocation.y, Config.PedLocation.z)
+    SetBlipSprite (blip, Config.BlipSprite)
+    SetBlipDisplay(blip, 2)
+    SetBlipScale  (blip, Config.BlipScale)
+    SetBlipColour (blip, Config.BlipColour)
+    SetBlipAsShortRange(blip, true)
+    BeginTextCommandSetBlipName("STRING")
+    AddTextComponentString(Config.BlipName)
+    EndTextCommandSetBlipName(blip)
+end)
+
+    ---------------
+    -- FUNCTIONS --
+    ---------------
+
+CreateNPC = function()
+    created_ped = CreatePed(5, GetHashKey(Config.PedModel) , Config.PedLocation.x, Config.PedLocation.y, Config.PedLocation.z, Config.PedLocation.w, false, true)
+    FreezeEntityPosition(created_ped, true)
+    SetEntityInvincible(created_ped, true)
+    SetBlockingOfNonTemporaryEvents(created_ped, true)
+    TaskStartScenarioInPlace(created_ped, Config.PedScenario, 0, true)
+end
+
+function DespawnTrailer()
     TrailerFound = {}
     for k, v in pairs(GetGamePool("CVehicle")) do
         for x, w in pairs(TrailerBuy) do
@@ -82,122 +57,187 @@ function RefoundTrailer()
                 local distanceToVehicle = GetDistanceBetweenCoords(GetEntityCoords(PlayerPedId()), GetEntityCoords(v), true)
                 if distanceToVehicle < 20 then
                     table.insert(TrailerFound, v)
+                    table.remove(TrailerBuy, x)
                 end
             end
         end
     end
-    RageUI.Visible(TRAIL.Menu.RefoundTrailer, not RageUI.Visible(TRAIL.Menu.RefoundTrailer))
-    while RageUI.Visible(TRAIL.Menu.RefoundTrailer) do
-        RageUI.IsVisible(TRAIL.Menu.RefoundTrailer, function()
-            for k, v in pairs(TrailerFound) do
-                RageUI.Button("Retourn ["..v.."]", nil, {}, true, {
-                    onSelected = function()
-                        RageUI.Visible(TRAIL.Menu.RefoundTrailer, not RageUI.Visible(TRAIL.Menu.RefoundTrailer))
-                        DeleteEntity(v)
-                        TriggerServerEvent("az_trailer:refound")
-                    end,
-                    onActive = function()
-                        local entcoords = GetEntityCoords(v)
-                        DrawMarker(20, entcoords.x, entcoords.y, entcoords.z + 1.1, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 0.3, 0., 0.3, 255, 255, 255, 200, 1, true, 2, 0, nil, nil, 0)
-                    end
-                })
-            end
-        end)
-        Citizen.Wait(0)
+    for k, v in pairs(TrailerFound) do
+        DeleteEntity(v)
     end
 end
 
-function SpawnRemorque(label, spawnname, coords, heading, price)
-    if Config.FrameWork == "ESX" then
-        ESX.TriggerServerCallback('az_trail:buyTrailer', function(canbuy)
-            if canbuy then
-                Config.SendNotification(Config.Lang["YouBuy"]..label.. Config.Lang["For"]..price..' $')
-                ESX.Game.SpawnVehicle(spawnname, coords, heading, function(vehicle)
-                    SetEntityHeading(vehicle, heading)
-                    SetVehicleOnGroundProperly(vehicle)
-                    table.insert(TrailerBuy, vehicle)
-                end)
-            else
-                Config.SendNotification(Config.Lang["CantBuy"])
-            end
-        end, price)
-    elseif Config.FrameWork == "QBCore" then
-        QBCore.Functions.TriggerCallback('az_trail:buyTrailer', function(canbuy)
-            if canbuy then
-                Config.SendNotification(Config.Lang["YouBuy"]..label.. Config.Lang["For"]..price..' $')
-                QBCore.Functions.SpawnVehicle(spawnname, function(vehicle)
-                    SetEntityHeading(vehicle, heading)
-                    SetVehicleOnGroundProperly(vehicle)
-                    table.insert(TrailerBuy, vehicle)
-                end, coords, true)
-            else
-                Config.SendNotification(Config.Lang["CantBuy"])
-            end
-        end, price)
+function GetVehicleInDirection(cFrom, cTo)
+    trailerfind = nil
+    notfindtrailer = true
+    local rayHandle = CastRayPointToPoint(cFrom.x, cFrom.y, cFrom.z, cTo.x, cTo.y, cTo.z, 10, PlayerPedId(), 0)
+    local _, _, _, _, vehicle = GetRaycastResult(rayHandle)
+    if vehicle == 0 then
+        notfindtrailer = true
+    else
+        notfindtrailer = false
+        trailerfind = vehicle
     end
+    return trailerfind
 end
 
-local npcspawn = false
-Citizen.CreateThread(function()
-    while true do
-        local wait = 2000
-        local playercoords = GetEntityCoords(PlayerPedId())
-        for k, v in pairs(Config.TrailerShop) do
-            if GetDistanceBetweenCoords(playercoords, v.npccoords, true) < 50 and not npcspawn then
-                RequestModel(GetHashKey(v.ped))
-                while not HasModelLoaded(GetHashKey(v.ped)) do
-                    Citizen.Wait(0)
-                end
-                TrailerPed = CreatePed(7,GetHashKey(v.ped),v.npccoords.x, v.npccoords.y, v.npccoords.z - 1, v.heading,0,true,true)
-                FreezeEntityPosition(TrailerPed, true)
-		        SetBlockingOfNonTemporaryEvents(TrailerPed, 1)
-                npcspawn = true
-            elseif GetDistanceBetweenCoords(playercoords, v.npccoords, true) < 2 then
-                wait = 0
-                Config.ShowHelpNotification(Config.Lang["PressToOpen"])
-                if IsControlJustReleased(0, 38) then
-                    if v.job == Config.GetJob() or v.job == 'none' then
-                        OpenMenuTrailer(k)
-                    else
-                        Config.SendNotification(Config.Lang["NotGoodJob"])
-                    end
-                end
-            elseif GetDistanceBetweenCoords(playercoords, lastcoords, true) > 100 and lastshop then
-                DeleteEntity(MissionPed)
-                npcspawn = false
-            end
+    ------------
+    -- EVENTS --
+    ------------
+
+RegisterNetEvent('az-trailer:openMenu', function()
+    exports['qb-menu']:openMenu({
+        {
+            header = "Rental Trailers",
+            isMenuHeader = true,
+        },
+        {
+            id = 1,
+            header = "Return Trailer",
+            txt = "Return your rented trailer",
+            params = {
+                event = "az-trailer:return",
+                args = {
+                    refundmoney = Config.RefundPrice
+                }
+            }
+        },
+        {
+            id = 2,
+            header = "Rent Car Trailer",
+            txt = "$250.00 deposit",
+            params = {
+                event = "az-trailer:spawncar",
+                args = {
+                    model = 'trailersmall',
+                    money = Config.TrailersmallPrice,
+                }
+            }
+        },
+        {
+            id = 3,
+            header = "Rent Boat Trailer",
+            txt = "$250.00 deposit",
+            params = {
+                event = "az-trailer:spawncar",
+                args = {
+                    model = 'boattrailer',
+                    money = Config.BoattrailerPrice,
+                }
+            }
+        },
+--[[         {
+            id = 4,
+            header = "Rent Track Trailer",
+            txt = "$7500.00 deposit",
+            params = {
+                event = "az-trailer:spawncar",
+                args = {
+                    model = 'tr2',
+                    money = Config.TracktrailerPrice,
+                }
+            }
+        }, ]]
+    })
+end)
+
+RegisterNetEvent('az-trailer:spawncar')
+AddEventHandler('az-trailer:spawncar', function(data)
+    local money = data.money
+    local model = data.model
+    local spawnLocation
+    local spawnHeading
+    if model == 'trailersmall' then
+        spawnLocation = Config.TrailersmallSpawnLocation
+        spawnHeading = Config.TrailersmallSpawnLocation.w
+    elseif model == 'boattrailer' then
+        spawnLocation = Config.BoattrailerSpawnLocation
+        spawnHeading = Config.BoattrailerSpawnLocation.w
+    --[[ elseif model == 'tr2' then
+        spawnLocation = Config.TracktrailerSpawnLocation
+        spawnHeading = Config.TracktrailerSpawnLocation.w ]]
+    else
+        spawnLocation = vector4(-49.96, -1692.76, 29.49, 287.79) -- Default location
+        spawnHeading = 287.79
+    end
+    local playerMoney = QBCore.Functions.GetPlayerData().money["cash"] or 0
+    if playerMoney >= money then
+        QBCore.Functions.SpawnVehicle(model, function(vehicle)
+            SetEntityHeading(vehicle, spawnHeading)
+            table.insert(TrailerBuy, vehicle)
+            SetVehicleOnGroundProperly(vehicle)
+            TriggerServerEvent('az_trailer:TakeCash', money)
+        end, spawnLocation, true)
+        if model == 'trailersmall' then
+            TriggerEvent('QBCore:Notify', 'You rented a car trailer', 'success')
+        elseif model == 'boattrailer' then
+            TriggerEvent('QBCore:Notify', 'You rented a boat trailer', 'success')
+        else TriggerEvent('QBCore:Notify', 'You rented a trailer', 'success')
         end
-        Citizen.Wait(wait)
+        else
+            if model == 'trailersmall' then
+                TriggerEvent('QBCore:Notify', 'You need $' .. Config.TrailersmallPrice .. ' in cash to rent this trailer', 'error')
+            elseif model == 'boattrailer' then
+                TriggerEvent('QBCore:Notify', 'You need $' .. Config.BoattrailerPrice .. ' in cash to rent this trailer', 'error')
+            --[[ elseif model == 'tr2' then
+                TriggerEvent('QBCore:Notify', 'You need $' .. Config.Tr2Price .. ' in cash to rent this trailer', 'error') ]]
+            else
+                TriggerEvent('QBCore:Notify', 'You need more cash to rent this trailer', 'error')
+            end
     end
 end)
 
-spawnarampe = false
-RegisterCommand('setrampe', function()
-    if not spawnarampe then
-        spawnarampe = true
+RegisterNetEvent('az-trailer:return')
+AddEventHandler('az-trailer:return', function(data)
+    local model = data.model
+    if next(TrailerBuy) then
+        DespawnTrailer()
+        QBCore.Functions.Notify('You returned the trailer', 'primary')
+        if model == 'trailersmall' then
+            TriggerServerEvent('az_trailer:GiveRefund', Config.TrailersmallPrice)
+        elseif model == 'boattrailer' then
+            TriggerServerEvent('az_trailer:GiveRefund', Config.BoattrailerPrice)
+        --[[ elseif model == 'tr2' then
+            TriggerServerEvent('az_trailer:GiveRefund', Config.TracktrailerPrice) ]]
+        else
+            TriggerServerEvent('az_trailer:GiveRefund', Config.RefundPrice)
+        end
+    else
+        QBCore.Functions.Notify("No trailer to return", "error")
+    end
+end)
+
+    --------------
+    -- COMMANDS --
+    --------------
+
+spawnramp = false
+RegisterCommand('setramp', function()
+    if not spawnramp then
+        spawnramp = true
         local ped = PlayerPedId()
         local coordA = GetEntityCoords(PlayerPedId(), 1)
         local coordB = GetOffsetFromEntityInWorldCoords(PlayerPedId(), 0.0, 20.0, 0.0)
         local trailerfind = GetVehicleInDirection(coordA, coordB)
         if tonumber(trailerfind) ~= 0 and trailerfind ~= nil then
             local playercoords = GetEntityCoords(PlayerPedId())
-            rampe = CreateObject(GetHashKey('prop_water_ramp_02'), playercoords.x, playercoords.y, playercoords.z - 1.4, false, false, false)
-            SetEntityHeading(rampe, GetEntityHeading(PlayerPedId()))
+            ramp = CreateObject(GetHashKey('prop_water_ramp_02'), playercoords.x, playercoords.y, playercoords.z - 1.4, false, false, false)
+            SetEntityHeading(ramp, GetEntityHeading(PlayerPedId()))
             trailerfind = nil
             notfindtrailer = true
         else
-            spawnarampe = false
-            Config.SendNotification(Config.Lang["TrailerNotFind"])
+            spawnramp = false
+            QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
         end
     else
-        Config.SendNotification(Config.Lang["RampeAlreadySet"])
+        QBCore.Functions.Notify(Config.Lang["RampAlreadySet"], 'warning')
     end
 end, false)
 
-RegisterCommand('deleterampe', function()
-    if spawnarampe then
-        DeleteEntity(rampe)
-        spawnarampe = false
+RegisterCommand('deleteramp', function()
+    if spawnramp then
+        DeleteEntity(ramp)
+        spawnramp = false
     end
 end, false)
 
@@ -218,7 +258,7 @@ local CommandTable = {
                     Citizen.SetTimeout(5000, function()
                         if trailerfind ~= 0 and trailerfind ~= nil then
                             startdecompte = false
-                            Config.SendNotification(Config.Lang["TrailerNotFind"])
+                            QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
                             havetobreak = true
                         end
                     end)
@@ -240,17 +280,17 @@ local CommandTable = {
                             AttachEntityToEntity(veh, trailerfind, GetEntityBoneIndexByName(trailerfind, 'chassis'), GetOffsetFromEntityGivenWorldCoords(trailerfind, boatCoordsInWorldLol), 0.0, 0.0, 0.0, false, false, true, false, 20, true)
                             TaskLeaveVehicle(PlayerPedId(), veh, 64)
                         else
-                            Config.SendNotification(Config.Lang["CantSetThisType"])
+                            QBCore.Functions.Notify(Config.Lang["CantSetThisType"], 'error')
                         end
                     end
                 end
                 trailerfind = nil
                 notfindtrailer = true
             else
-                Config.SendNotification(Config.Lang["TrailerNotFind"])
+                QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
             end
         else
-            Config.SendNotification(Config.Lang["NotInVehicle"])
+            QBCore.Functions.Notify(Config.Lang["NotInVehicle"], 'error')
         end
     end,
     ["detachtrailer"] = function()
@@ -261,7 +301,7 @@ local CommandTable = {
                 notfindtrailer = true
                 trailerfind = nil
             else
-                Config.SendNotification(Config.Lang["NoVehicleSet"])
+                QBCore.Functions.Notify(Config.Lang["NoVehicleSet"], 'error')
             end
         else
             local vehicleintrailer = globalSearch()
@@ -270,11 +310,11 @@ local CommandTable = {
                 notfindtrailer = true
                 trailerfind = nil
             else
-                Config.SendNotification(Config.Lang["TrailerNotFind"])
+                QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
             end
         end
     end,
-    ["openrampetr2"] = function()
+    ["openramptr2"] = function()
         local trailerfind = globalSearch()
         if tonumber(trailerfind) ~= 0 and trailerfind ~= nil then
             if GetDisplayNameFromVehicleModel(GetEntityModel(trailerfind)) == 'TRAILER' then
@@ -283,10 +323,10 @@ local CommandTable = {
             trailerfind = nil
             notfindtrailer = true
         else
-            Config.SendNotification(Config.Lang["TrailerNotFind"])
+            QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
         end
     end,
-    ["closerampetr2"] = function()
+    ["closeramptr2"] = function()
         local trailerfind = globalSearch()
         if tonumber(trailerfind) ~= 0 and trailerfind ~= nil then
             if GetDisplayNameFromVehicleModel(GetEntityModel(trailerfind)) == 'TRAILER' then
@@ -295,7 +335,7 @@ local CommandTable = {
             trailerfind = nil
             notfindtrailer = true
         else
-            Config.SendNotification(Config.Lang["TrailerNotFind"])
+            QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
         end
     end,
     ["opentrunktr2"] = function()
@@ -307,7 +347,7 @@ local CommandTable = {
             trailerfind = nil
             notfindtrailer = true
         else
-            Config.SendNotification(Config.Lang["TrailerNotFind"])
+            QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
         end
     end,
     ["closetrunktr2"] = function()
@@ -319,7 +359,7 @@ local CommandTable = {
             trailerfind = nil
             notfindtrailer = true
         else
-            Config.SendNotification(Config.Lang["TrailerNotFind"])
+            QBCore.Functions.Notify(Config.Lang["TrailerNotFound"], 'error')
         end
     end,
 }
@@ -328,18 +368,4 @@ for k, v in pairs(Config.Command) do
     RegisterCommand(v, function()
         CommandTable[k]()
     end)
-end
-
-function GetVehicleInDirection(cFrom, cTo)
-    trailerfind = nil
-    notfindtrailer = true
-    local rayHandle = CastRayPointToPoint(cFrom.x, cFrom.y, cFrom.z, cTo.x, cTo.y, cTo.z, 10, PlayerPedId(), 0)
-    local _, _, _, _, vehicle = GetRaycastResult(rayHandle)
-    if vehicle == 0 then
-        notfindtrailer = true
-    else
-        notfindtrailer = false
-        trailerfind = vehicle
-    end
-    return trailerfind
 end

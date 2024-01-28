@@ -21,29 +21,32 @@ Simple quality of life update for az_trailer
     * Rename folder to "az_trailer"
     * Start resource through server.cfg
     * Add this to your qb-target\init.lua inside of the Config.TargetModels table:
+
     ```lua
     ["TrailerRental"] = {
-    	models = {
-    		`S_F_M_Autoshop_01`,
+    models = {
+    	`S_F_M_Autoshop_01`,
+    },
+    options = {
+    	{
+    		type = "client",
+    		event = "az-trailer:openMenu",
+    		icon = "fas fa-car",
+    		label = "Rent Trailer",
     	},
-    	options = {
-    		{
-    			type = "client",
-    			event = "az-trailer:openMenu",
-    			icon = "fas fa-car",
-    			label = "Rent Trailer",
-    		},
-    	},
-    	distance = 4.0
-	},
+    },
+    distance = 4.0
+	  },
     ```
+
     *(Optional) Add this to your ps-ui\html\style.css
+
     ```css
     .warning {
       background-color: rgba(236, 176, 11, 0.85);
       color: #333333;
     }
-```
+    ```
 
 ## Commands
 The basic commands present are :
@@ -53,7 +56,7 @@ The basic commands present are :
 - Install and remove a ramp for easier access to the vehicle - ("/setramp"), ("/deleteramp"), 
 
 # Preview
-
+https://youtu.be/25m407oDAMg
 
 # Credits
 

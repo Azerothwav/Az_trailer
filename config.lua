@@ -1,5 +1,8 @@
 Config = {}
 
+-- Menu
+Config.Menu = 'ox' -- use 'ox' for ox_lib menu and 'qb' for qb-menu
+
 -- Prices
 Config.RefundPrice = 150 -- default refund amount
 Config.TrailersmallPrice = 250

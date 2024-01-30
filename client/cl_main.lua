@@ -86,59 +86,104 @@ end
     ------------
 
 RegisterNetEvent('az-trailer:openMenu', function()
-    exports['qb-menu']:openMenu({
-        {
-            header = "Rental Trailers",
-            isMenuHeader = true,
-        },
-        {
-            id = 1,
-            header = "Return Trailer",
-            txt = "Return your rented trailer",
-            params = {
-                event = "az-trailer:return",
+    if Config.Menu == "ox" then
+        lib.registerContext({
+            id = 'rental_trailers',
+            title = 'Rental Trailers',
+            options = {
+              {
+                title = 'Return Trailer',
+                description = 'Return your rented trailer',
+                event = 'az-trailer:return',
                 args = {
                     refundmoney = Config.RefundPrice
                 }
-            }
-        },
-        {
-            id = 2,
-            header = "Rent Car Trailer",
-            txt = "$250.00 deposit",
-            params = {
-                event = "az-trailer:spawncar",
+              },
+              {
+                title = 'Rent Car Trailer',
+                description = '$250.00 deposit',
+                event = 'az-trailer:spawncar',
                 args = {
                     model = 'trailersmall',
                     money = Config.TrailersmallPrice,
                 }
-            }
-        },
-        {
-            id = 3,
-            header = "Rent Boat Trailer",
-            txt = "$250.00 deposit",
-            params = {
-                event = "az-trailer:spawncar",
+              },
+              {
+                title = 'Rent Boat Trailer',
+                description = '$250.00 deposit',
+                event = 'az-trailer:spawncar',
                 args = {
                     model = 'boattrailer',
                     money = Config.BoattrailerPrice,
                 }
-            }
-        },
---[[         {
-            id = 4,
-            header = "Rent Track Trailer",
-            txt = "$7500.00 deposit",
-            params = {
-                event = "az-trailer:spawncar",
+              },
+--[[               {
+                title = 'Rent Track Trailer',
+                description = '$750.00 deposit',
+                event = 'az-trailer:spawncar',
                 args = {
                     model = 'tr2',
                     money = Config.TracktrailerPrice,
                 }
-            }
-        }, ]]
-    })
+              }, ]]
+            },
+          })
+        lib.showContext('rental_trailers')
+    else
+        exports['qb-menu']:openMenu({
+            {
+                header = "Rental Trailers",
+                isMenuHeader = true,
+            },
+            {
+                id = 1,
+                header = "Return Trailer",
+                txt = "Return your rented trailer",
+                params = {
+                    event = "az-trailer:return",
+                    args = {
+                        refundmoney = Config.RefundPrice
+                    }
+                }
+            },
+            {
+                id = 2,
+                header = "Rent Car Trailer",
+                txt = "$250.00 deposit",
+                params = {
+                    event = "az-trailer:spawncar",
+                    args = {
+                        model = 'trailersmall',
+                        money = Config.TrailersmallPrice,
+                    }
+                }
+            },
+            {
+                id = 3,
+                header = "Rent Boat Trailer",
+                txt = "$250.00 deposit",
+                params = {
+                    event = "az-trailer:spawncar",
+                    args = {
+                        model = 'boattrailer',
+                        money = Config.BoattrailerPrice,
+                    }
+                }
+            },
+    --[[         {
+                id = 4,
+                header = "Rent Track Trailer",
+                txt = "$7500.00 deposit",
+                params = {
+                    event = "az-trailer:spawncar",
+                    args = {
+                        model = 'tr2',
+                        money = Config.TracktrailerPrice,
+                    }
+                }
+            }, ]]
+        })
+    end
 end)
 
 RegisterNetEvent('az-trailer:spawncar')

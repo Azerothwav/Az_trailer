@@ -34,12 +34,8 @@ client_scripts {
     'lib/menu/elements/ItemsColour.lua',
     'lib/menu/elements/PanelColour.lua',
 
-	'config.lua',
-    'client/**/*.lua',
+    'config.lua',
+    'client/**/*.lua'
 }
 
-server_scripts {
-	'@mysql-async/lib/MySQL.lua',
-	'config.lua',
-    'server/**/*.lua',
-}
+server_scripts { '@mysql-async/lib/MySQL.lua', 'config.lua', 'server/**/*.lua' }

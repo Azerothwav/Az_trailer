@@ -173,7 +173,7 @@ end)
 
 Citizen.CreateThread(function()
     for k, v in pairs(Config.TrailerShop) do
-        v.entityPed = createPNJ(v.npccoords, v.ped)
+        v.entityPed = createPNJ(vec4(v.npccoords.x, v.npccoords.y, v.npccoords.z, v.heading), v.ped)
         if Config.UseOxTarget then
             exports.ox_target:addLocalEntity(v.entityPed, {
                 {

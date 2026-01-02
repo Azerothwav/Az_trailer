@@ -9,7 +9,6 @@ TRAIL.Menu.Main = RageUI.CreateMenu('', 'Trailer Shop', nil, nil, 'root_cause', 
 TRAIL.Menu.RefoundTrailer = RageUI.CreateMenu('', 'Refound Trailer', nil, nil, 'root_cause', 'shopui_title_elitastravel')
 
 if Config.FrameWork == 'ESX' then
-    ESX = exports['es_extended']:getSharedObject()
     RegisterNetEvent('esx:playerLoaded')
     AddEventHandler('esx:playerLoaded', function(xPlayer)
         ESX.PlayerData = xPlayer
@@ -379,4 +378,5 @@ function GetVehicleInDirection(cFrom, cTo)
     end
     return trailerfind
 end
+
 

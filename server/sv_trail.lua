@@ -1,6 +1,4 @@
 if Config.FrameWork == 'ESX' then
-    ESX = exports['es_extended']:getSharedObject()
-
     ESX.RegisterServerCallback('az_trail:buyTrailer', function(source, cb, price)
         local xPlayer = ESX.GetPlayerFromId(source)
         if xPlayer and xPlayer ~= nil then
@@ -37,3 +35,4 @@ RegisterNetEvent('az_trailer:refound', function()
         Player.Functions.GiveMoney('cash', Config.RefoundPrice)
     end
 end)
+

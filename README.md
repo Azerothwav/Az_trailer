@@ -67,13 +67,16 @@ Another new feature of this script is the inclusion of QBCore accounting. From n
 ## Commands
 Here are the available commands and their descriptions:
 
-- **/attach** - Attach a vehicle to the trailer.
-- **/detach** - Detach a vehicle from the trailer.
-- **/ramp** - Open or close the access ramp for the Tr2 (a large tow truck for multiple vehicles).
-- **/slideramp** - Slide the ramp to access the second floor of the Tr2.
-- **/addramp** - Install a ramp for easier access to the vehicle.
-- **/removeramp** - Remove the installed ramp.
+- **/attachtrailer** - Attach a vehicle to the trailer.
+- **/detachtrailer** - Detach a vehicle from the trailer.
+- **/opentrunktr2** - Open the access ramp for the Tr2 (a large tow truck for multiple vehicles).
+- **/closetrunktr2** - Close the access ramp for the Tr2 (a large tow truck for multiple vehicles).
+- **/openrampetr2** - Slide the ramp to access the second floor of the Tr2.
+- **/closerampetr2** - Slide the ramp to access the second floor of the Tr2.
+- **/setrampe** - Install a ramp for easier access to the vehicle.
+- **/deleterampe** - Remove the installed ramp.
 
+You can change all commands by accessing line 246 of the client file.
 ---
 
 ## Preview
